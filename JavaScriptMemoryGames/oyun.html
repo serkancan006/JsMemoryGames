@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Resimleri Eşleştir</title>
+
+    <style type="text/css">
+    .cerceve{
+      width:900px;
+      margin:auto;
+    }
+    .ustdiv{
+    	width:800px;  
+     
+    }
+      
+    .kutu{
+      width:85px;
+      height:100px;
+      float:left;
+      border:5px #03f groove;
+      margin:5px;
+        
+    }
+    .altsatir{
+     	 clear:both;
+    }
+    img{
+      width:85px;
+      height:100px;
+    }
+    </style>
+
+    <script type="text/javascript" src="jquery-3.5.1.min.js"></script>
+    
+    <script type="text/javascript">
+    	var resimdizisi = new Array();
+      var acilanresimdizisi = new Array();
+      var acilanresimsay = 0;
+      //random resim id dizisi
+      function baslangic(){
+       	var i, j, rasgele;
+        var resimSayisi= 4;
+        var rasgeleResimDizisi= new Array();
+        
+        for(i=0; i<2; i++){
+         	for(j=0; j < resimSayisi; j++){
+            resimdizisi.push(j + ".jpg");            
+          }
+        }
+         
+        for(i=0; i < resimSayisi*2 ; i++){
+         	rasgele = Math.round(Math.random() * (resimdizisi.length-1));
+          rasgeleResimDizisi[i] = resimdizisi[rasgele];
+          resimdizisi.splice(rasgele, 1);    
+          
+          
+        }
+        
+        resimdizisi= rasgeleResimDizisi;
+        
+      }
+      //oyun alanı oluşturma
+      $(document).ready(function(e){
+       $(".ustdiv").click(
+         function(){
+           $("#saha").empty();
+           resimdizisi=[];
+           baslangic();
+           var indis=0;          
+          
+           for(var i=0; i<3; i++){
+            for(var j=0; j<3; j++, indis++){
+              $(".oyunalani").append("<div class='kutu' ><img src='resimler/arkaYuz.jpg' id='"+resimdizisi[indis]+"'onclick='resimac(this)'></div>");
+            }
+             $("#saha").append("<div class='altsatir'></div>");
+           }
+           
+         }
+         )
+      });
+      //açılan resimlerin id dizisi
+      function resimac(nesne){
+        if(acilanresimsay != 2){
+         if(acilanresimsay== 0){
+          nesne.src = "resimler/" + nesne.id;
+          acilanresimdizisi[0] = nesne;
+          acilanresimsay =1;
+         }
+          else if(nesne != acilanresimdizisi[0])
+          {
+           nesne.src = "resimler/" + nesne.id;
+            acilanresimdizisi[1] = nesne;
+            acilanresimsay = 2;
+            setTimeout("bekle()", 10000);//kaç saniye bekliceğini betirtiriz
+            bak2(10);
+          }
+        }
+      }
+      //oyun bitimi ve eşleşme durumları
+      var skor =0;
+      function bekle(){
+        
+       if( acilanresimdizisi[1].src == acilanresimdizisi[0].src){
+        	acilanresimdizisi[0].hidden = true;
+         	acilanresimdizisi[1].hidden = true;
+          skor = skor +100;
+          if(document.getElementById("0.jpg").hidden==true&&document.getElementById("1.jpg").hidden==true&&document.getElementById("2.jpg").hidden==true&&document.getElementById("3.jpg").hidden==true){
+          alert("tebrikler oyun bitti skorunuz ="+skor);
+          var cookieskor=getCookie("score");
+        if(skor>cookieskor){
+          setCookie("score",skor);
+          document.getElementById("bestskor").innerHTML = "En İyi Skor: "+skor;
+        }
+        skor = 0;}
+       }
+        else{
+          acilanresimdizisi[0].src = "resimler/arkaYuz.jpg";
+          acilanresimdizisi[1].src = "resimler/arkaYuz.jpg";
+          skor = skor-40;
+        }
+        acilanresimsay= 0;
+        document.getElementById("skor").innerHTML = skor;
+      }
+     
+      function setCookie(cname, cvalue) {
+  document.cookie = cname + "=" + cvalue + ";"+ ";path=/";
+}
+function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+  function CheckCookie()
+  {
+    var cookiead=getCookie("name");
+    if(cookiead==""||cookiead==null)
+    {
+      user = prompt("Adınızı Giriniz:","");
+      if (user != "" && user != null) {
+       setCookie("name", user);
+    }
+    //CheckCookie();
+  }
+  }
+
+  function sayfayenileme()
+  {
+  CheckCookie();
+  document.getElementById("isim").innerHTML = "Hoşgeldiniz: "+ getCookie("name");
+  document.getElementById("bestskor").innerHTML ="En iyi skor: "+ getCookie("score");
+}
+
+
+  </script>
+  </head>
+  <body onload="sayfayenileme()">
+    <h2 id="isim">Cookie Ad</h4>
+    <div class="cerceve">
+    <div class="ustdiv" >YENİ OYUN </div>
+    <p id="bestskor">Cookie Skor</p>
+    <p id="skor">0</p>
+    <p id="timer">
+      <span id="timer-saniyeler"></span>
+  </p>
+    <div class="oyunalani" id="saha"> </div>
+    </div>
+  </body>
+  <script src="./time.js"></script>
+</html>
